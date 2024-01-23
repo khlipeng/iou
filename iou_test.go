@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func BenchmarkIoU(t *testing.B) {
-	t.Run("Polygon", func(t *testing.B) {
+func BenchmarkIoU(b *testing.B) {
+	b.Run("Polygon", func(b *testing.B) {
 		str1 := `
 		[[419,374],[539,251],[657,251],[823,183],[941,181],[1058,216],[1185,273],[1185,425],[1050,592],[793,592],[751,650],[834,794],[1174,782],[1311,525],[1328,344],[1489,438],[1489,598],[1398,896],[1075,928],[1543,920],[1555,736],[1579,538],[1707,486],[1707,784],[1650,1056],[1403,1064],[799,1047],[515,1017],[441,754],[322,555]]
 		`
@@ -20,15 +20,18 @@ func BenchmarkIoU(t *testing.B) {
 
 		p1 := iou.Polygon{}
 		err := json.Unmarshal([]byte(str1), &p1)
-		require.NoError(t, err)
+		require.NoError(b, err)
 		p2 := iou.Polygon{}
 		err = json.Unmarshal([]byte(str2), &p2)
-		require.NoError(t, err)
+		require.NoError(b, err)
 
-		require.Equal(t, p1.IoU(p2) > 0.93, true)
+		for n := 0; n < b.N; n++ {
+			require.Equal(b, p1.IoU(p2) > 0.93, true)
+		}
+
 	})
 
-	t.Run("Box 0.25", func(t *testing.B) {
+	b.Run("Box 0.25", func(b *testing.B) {
 		str1 := `
 		[[0,0],[500,0],[500,500],[0,500]]
 		`
@@ -39,13 +42,18 @@ func BenchmarkIoU(t *testing.B) {
 
 		p1 := iou.Polygon{}
 		err := json.Unmarshal([]byte(str1), &p1)
-		require.NoError(t, err)
+		require.NoError(b, err)
 		p2 := iou.Polygon{}
 		err = json.Unmarshal([]byte(str2), &p2)
-		require.NoError(t, err)
-		require.Equal(t, p1.IoU(p2) == 0.25, true)
+		require.NoError(b, err)
+
+		for n := 0; n < b.N; n++ {
+			require.Equal(b, p1.IoU(p2) == 0.25, true)
+		}
+
 	})
-	t.Run("Box 1", func(t *testing.B) {
+	b.Run("Box 1", func(b *testing.B) {
+
 		str1 := `
 		[[0,0],[500,0],[500,500],[0,500]]
 		`
@@ -56,10 +64,14 @@ func BenchmarkIoU(t *testing.B) {
 
 		p1 := iou.Polygon{}
 		err := json.Unmarshal([]byte(str1), &p1)
-		require.NoError(t, err)
+		require.NoError(b, err)
 		p2 := iou.Polygon{}
 		err = json.Unmarshal([]byte(str2), &p2)
-		require.NoError(t, err)
-		require.Equal(t, p1.IoU(p2) == 1, true)
+		require.NoError(b, err)
+		for n := 0; n < b.N; n++ {
+
+			require.Equal(b, p1.IoU(p2) == 1, true)
+		}
 	})
+
 }
